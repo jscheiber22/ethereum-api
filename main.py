@@ -6,6 +6,7 @@
     Intended for use with Ethpool, Ethermine & Flypool pools.
 '''
 
+import sys
 import requests
 from datetime import datetime
 
@@ -179,18 +180,21 @@ class Worker:
 
 # Test cases :D
 if __name__ == '__main__':
-    generalTest = General("0x2E5Acdc5C6F1083c4d6127a6b41e6BDB24b6b8E0")
-    workerTest = Worker("0x2E5Acdc5C6F1083c4d6127a6b41e6BDB24b6b8E0", "thotbox")
+    # Checks for --test or -t argument from CLI run to run with test cases
+    for arg in sys.argv:
+        if arg == "--test" or arg == "-t":
+            generalTest = General("0x2E5Acdc5C6F1083c4d6127a6b41e6BDB24b6b8E0")
+            workerTest = Worker("0x2E5Acdc5C6F1083c4d6127a6b41e6BDB24b6b8E0", "thotbox")
 
-    # Worker Specific Tests
-    generalTest.update()
-    print("Last seen " + str(generalTest.lastSeen()) + " minutes ago")
-    print("Shares: " + str(generalTest.getValidShares()) + "/" + str(generalTest.getStaleShares()) + "/" + str(generalTest.getInvalidShares()))
-    print("Currently getting " + str(generalTest.getCurrentHashrate()) + "MH/s.")
+            # Worker Specific Tests
+            generalTest.update()
+            print("Last seen " + str(generalTest.lastSeen()) + " minutes ago")
+            print("Shares: " + str(generalTest.getValidShares()) + "/" + str(generalTest.getStaleShares()) + "/" + str(generalTest.getInvalidShares()))
+            print("Currently getting " + str(generalTest.getCurrentHashrate()) + "MH/s.")
 
-    # Worker Specific Tests
-    workerTest.update()
-    print(workerTest.getWorkerName())
-    print("Last seen " + str(workerTest.lastSeen()) + " minutes ago")
-    print("Shares: " + str(workerTest.getValidShares()) + "/" + str(workerTest.getStaleShares()) + "/" + str(workerTest.getInvalidShares()))
-    print("Currently getting " + str(workerTest.getCurrentHashrate()) + "MH/s, but worker " + workerTest.getWorkerName() + " has averaged " + str(workerTest.getAverageHashrate()) + "MH/s.")
+            # Worker Specific Tests
+            workerTest.update()
+            print(workerTest.getWorkerName())
+            print("Last seen " + str(workerTest.lastSeen()) + " minutes ago")
+            print("Shares: " + str(workerTest.getValidShares()) + "/" + str(workerTest.getStaleShares()) + "/" + str(workerTest.getInvalidShares()))
+            print("Currently getting " + str(workerTest.getCurrentHashrate()) + "MH/s, but worker " + workerTest.getWorkerName() + " has averaged " + str(workerTest.getAverageHashrate()) + "MH/s.")
