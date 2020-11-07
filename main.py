@@ -63,6 +63,18 @@ class Worker:
         # Returns differnce in time in seconds divided by 60 to make into minutes and then made an integer with // :) Algorithm god 8)
         return (currentTime - lastSeen).seconds // 60
 
+    def getCurrentHashrate(self):
+        return self.worker["currentHashrate"]
+
+    def getValidShares(self):
+        return self.worker["validShares"]
+
+    def getInvalidShares(self):
+        return self.worker["invalidShares"]
+
+    def getStaleShares(self):
+        return self.worker["staleShares"]
+
     def update(self):
         response = requests.get("https://api.ethermine.org/miner/" + self.address + "/dashboard") # All data for general information, not miner specific
 
@@ -112,3 +124,4 @@ if __name__ == '__main__':
     workerTest.update()
     print(workerTest.getWorkerName())
     print("Last seen " + str(workerTest.lastSeen()) + " minutes ago")
+    print("Shares: " + str(workerTest.getValidShares()) + "/" + str(workerTest.getStaleShares()) + "/" + str(workerTest.getInvalidShares()))
