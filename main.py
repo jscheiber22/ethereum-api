@@ -7,6 +7,7 @@
 '''
 
 import requests
+from datetime import datetime
 
 class General:
     def __init__(self, address):
@@ -21,18 +22,49 @@ class General:
         # Response for good :) Now it will run all the data determining and whatnot
         elif response.status_code == 200:
             data = response.json()
+            self.data = data["data"]
 
         # Uho, one of the other many return codes I neglected to prepare this code for :/ good luck bubs
         else:
             print("API request returned with code: " + response.status_code + ". Sorry :/")
             exit()
 
+'''
+    List of callable commands for Worket because I'll forget because I'm dumb :)
+    # for the docs 8)
+
+    update() - updates the information and repulls from the API; no return
+    getWorkerName() - returns name of worker declared on object creation; returns String
+    isActive() - returns true if active, false if not; returns boolean
+    lastSeen() - returns time since last seen in minutes; returns minutes as integer
+'''
+
+
 
 # Technically the data for the miners is available to the general class, but this breaks it up more and makes it easier to work with I think? hope?
 class Worker:
     def __init__(self, address, workerName):
-        address = str(address)
-        response = requests.get("https://api.ethermine.org/miner/" + address + "/dashboard") # All data for general information, not miner specific
+        self.address = str(address)
+        self.workerName = workerName
+        self.update()
+
+    def getWorkerName(self):
+        return self.worker["worker"]
+
+    def isActive(self):
+        if self.worker["currentHashrate"] < 1:
+            return False
+        else:
+            return True
+
+    def lastSeen(self):
+        lastSeen = datetime.utcfromtimestamp(self.worker["lastSeen"]) # In UTC time
+        currentTime = datetime.utcnow()
+        # Returns differnce in time in seconds divided by 60 to make into minutes and then made an integer with // :) Algorithm god 8)
+        return (currentTime - lastSeen).seconds // 60
+
+    def update(self):
+        response = requests.get("https://api.ethermine.org/miner/" + self.address + "/dashboard") # All data for general information, not miner specific
 
         # Response for could not find API address so not good :/
         if response.status_code == 404:
@@ -64,8 +96,7 @@ class Worker:
             else:
                 workerNumber = 0
 
-            self.workerName = workers[workerNumber]["worker"]
-
+            self.worker = data["data"]["workers"][workerNumber]
 
         # Uho, one of the other many return codes I neglected to prepare this code for :/ good luck bubs
         else:
@@ -78,4 +109,6 @@ if __name__ == '__main__':
     generalTest = General("0x2E5Acdc5C6F1083c4d6127a6b41e6BDB24b6b8E0")
     workerTest = Worker("0x2E5Acdc5C6F1083c4d6127a6b41e6BDB24b6b8E0", "thotbox")
 
-    print(workerTest.workerName)
+    workerTest.update()
+    print(workerTest.getWorkerName())
+    print("Last seen " + str(workerTest.lastSeen()) + " minutes ago")
